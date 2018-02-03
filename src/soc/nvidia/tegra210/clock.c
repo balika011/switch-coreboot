@@ -489,12 +489,12 @@ u32 clock_configure_plld(u32 frequency)
  */
 void clock_early_uart(void)
 {
-	write32(CLK_RST_REG(clk_src_uarta),
+	write32(CLK_RST_REG(clk_src_uartb),
 		CLK_SRC_DEV_ID(UARTA, PLLP) << CLK_SOURCE_SHIFT |
 		CLK_UART_DIV_OVERRIDE |
 		CLK_DIVIDER(TEGRA_PLLP_KHZ, 1843));
 
-	clock_enable_clear_reset_l(CLK_L_UARTA);
+	clock_enable_clear_reset_l(CLK_L_UARTB);
 }
 
 /* Enable output clock (CLK1~3) for external peripherals. */

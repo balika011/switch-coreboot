@@ -52,10 +52,10 @@ static const struct funit_cfg funits[] = {
 /********************* UART ***********************************/
 static const struct pad_config uart_console_pads[] = {
 	/* UARTA: tx, rx, rts, cts */
-	PAD_CFG_SFIO(UART1_TX, PINMUX_PULL_NONE, UARTA),
-	PAD_CFG_SFIO(UART1_RX, PINMUX_INPUT_ENABLE | PINMUX_PULL_UP, UARTA),
-	PAD_CFG_SFIO(UART1_RTS, PINMUX_PULL_UP, UARTA),
-	PAD_CFG_SFIO(UART1_CTS, PINMUX_PULL_UP, UARTA),
+	PAD_CFG_SFIO(UART2_TX, PINMUX_PULL_NONE, UARTB),
+	PAD_CFG_SFIO(UART2_RX, PINMUX_INPUT_ENABLE | PINMUX_PULL_UP, UARTB),
+	PAD_CFG_SFIO(UART2_RTS, PINMUX_PULL_NONE, UARTB),
+	PAD_CFG_SFIO(UART2_CTS, PINMUX_INPUT_ENABLE | PINMUX_PULL_UP, UARTB),
 };
 
 void bootblock_mainboard_early_init(void)
@@ -66,7 +66,7 @@ void bootblock_mainboard_early_init(void)
 static void set_clock_sources(void)
 {
 	/* UARTA gets PLLP, deactivate CLK_UART_DIV_OVERRIDE */
-	write32(CLK_RST_REG(clk_src_uarta), PLLP << CLK_SOURCE_SHIFT);
+	write32(CLK_RST_REG(clk_src_uartb), PLLP << CLK_SOURCE_SHIFT);
 }
 
 #if 0

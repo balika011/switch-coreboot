@@ -22,7 +22,12 @@
 #include <symbols.h>
 
 typedef struct bl31_plat_params {
-	uint32_t tzdram_size;
+	/* TZ memory size */
+	uint64_t tzdram_size;
+	/* TZ memory base */
+	uint64_t tzdram_base;
+	/* UART port ID */
+	int uart_id;
 } bl31_plat_params_t;
 
 static bl31_plat_params_t t210_plat_params;
@@ -36,6 +41,8 @@ void *soc_get_bl31_plat_params(bl31_params_t *params)
 
 	assert(tz_size_mib < 4096);
 	t210_plat_params.tzdram_size = tz_size_mib * MiB;
+	t210_plat_params.tzdram_base = tz_base_mib * MiB;
+	t210_plat_params.uart_id = 2;
 
 	dcache_clean_by_mva(&t210_plat_params, sizeof(t210_plat_params));
 

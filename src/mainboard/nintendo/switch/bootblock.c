@@ -57,7 +57,7 @@ void bootblock_mainboard_early_init(void)
 
 static void set_clock_sources(void)
 {
-	/* UARTA gets PLLP, deactivate CLK_UART_DIV_OVERRIDE */
+	/* UARTB gets PLLP, deactivate CLK_UART_DIV_OVERRIDE */
 	write32(CLK_RST_REG(clk_src_uartb), PLLP << CLK_SOURCE_SHIFT);
 }
 

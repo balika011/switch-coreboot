@@ -490,7 +490,7 @@ u32 clock_configure_plld(u32 frequency)
 void clock_early_uart(void)
 {
 	write32(CLK_RST_REG(clk_src_uartb),
-		CLK_SRC_DEV_ID(UARTA, PLLP) << CLK_SOURCE_SHIFT |
+		CLK_SRC_DEV_ID(UARTB, PLLP) << CLK_SOURCE_SHIFT |
 		CLK_UART_DIV_OVERRIDE |
 		CLK_DIVIDER(TEGRA_PLLP_KHZ, 1843));
 

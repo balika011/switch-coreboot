@@ -84,6 +84,14 @@ config CONSOLE_SERIAL_TEGRA210_UART_ADDRESS
 	help
 	  Map the UART names to the respective MMIO addres.
 
+config CONSOLE_SERIAL_TEGRA210_UART_ID
+	int
+	default 0 if CONSOLE_SERIAL_TEGRA210_UARTA
+	default 1 if CONSOLE_SERIAL_TEGRA210_UARTB
+	default 2 if CONSOLE_SERIAL_TEGRA210_UARTC
+	default 3 if CONSOLE_SERIAL_TEGRA210_UARTD
+	default 4 if CONSOLE_SERIAL_TEGRA210_UARTE
+
 config BOOTROM_SDRAM_INIT
 	bool "SoC BootROM does SDRAM init with full BCT"
 	default n

@@ -42,7 +42,7 @@ void *soc_get_bl31_plat_params(bl31_params_t *params)
 	assert(tz_size_mib < 4096);
 	t210_plat_params.tzdram_size = tz_size_mib * MiB;
 	t210_plat_params.tzdram_base = tz_base_mib * MiB;
-	t210_plat_params.uart_id = 2;
+	t210_plat_params.uart_id = CONFIG_CONSOLE_SERIAL_TEGRA210_UART_ID + 1;
 
 	dcache_clean_by_mva(&t210_plat_params, sizeof(t210_plat_params));
 

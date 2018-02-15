@@ -42,23 +42,83 @@ static const struct funit_cfg funits[] = {
 };
 
 /********************* UART ***********************************/
-static const struct pad_config uart_console_pads[] = {
+static const struct pad_config uarta_pads[] = {
 	/* UARTA: tx, rx, rts, cts */
+	PAD_CFG_SFIO(UART1_TX, PINMUX_PULL_NONE, UARTA),
+	PAD_CFG_SFIO(UART1_RX, PINMUX_INPUT_ENABLE | PINMUX_PULL_UP, UARTA),
+	PAD_CFG_SFIO(UART1_RTS, PINMUX_PULL_NONE, UARTA),
+	PAD_CFG_SFIO(UART1_CTS, PINMUX_INPUT_ENABLE | PINMUX_PULL_UP, UARTA),
+};
+
+static const struct pad_config uartb_pads[] = {
+	/* UARTB: tx, rx, rts, cts */
 	PAD_CFG_SFIO(UART2_TX, PINMUX_PULL_NONE, UARTB),
 	PAD_CFG_SFIO(UART2_RX, PINMUX_INPUT_ENABLE | PINMUX_PULL_UP, UARTB),
 	PAD_CFG_SFIO(UART2_RTS, PINMUX_PULL_NONE, UARTB),
 	PAD_CFG_SFIO(UART2_CTS, PINMUX_INPUT_ENABLE | PINMUX_PULL_UP, UARTB),
 };
 
+static const struct pad_config uartc_pads[] = {
+	/* UARTC: tx, rx, rts, cts */
+	PAD_CFG_SFIO(UART3_TX, PINMUX_PULL_NONE, UARTC),
+	PAD_CFG_SFIO(UART3_RX, PINMUX_INPUT_ENABLE | PINMUX_PULL_UP, UARTC),
+	PAD_CFG_SFIO(UART3_RTS, PINMUX_PULL_NONE, UARTC),
+	PAD_CFG_SFIO(UART3_CTS, PINMUX_INPUT_ENABLE | PINMUX_PULL_UP, UARTC),
+};
+
+static const struct pad_config uartd_pads[] = {
+	/* UARTD: tx, rx, rts, cts */
+	PAD_CFG_SFIO(UART4_TX, PINMUX_PULL_NONE, UARTD),
+	PAD_CFG_SFIO(UART4_RX, PINMUX_INPUT_ENABLE | PINMUX_PULL_UP, UARTD),
+	PAD_CFG_SFIO(UART4_RTS, PINMUX_PULL_NONE, UARTD),
+	PAD_CFG_SFIO(UART4_CTS, PINMUX_INPUT_ENABLE | PINMUX_PULL_UP, UARTD),
+};
+
 void bootblock_mainboard_early_init(void)
 {
-	soc_configure_pads(uart_console_pads, ARRAY_SIZE(uart_console_pads));
+	switch (CONFIG_CONSOLE_SERIAL_TEGRA210_UART_ID) {
+	case 0:
+		soc_configure_pads(uarta_pads, ARRAY_SIZE(uarta_pads));
+		break;
+	case 1:
+		soc_configure_pads(uartb_pads, ARRAY_SIZE(uartb_pads));
+		break;
+	case 2:
+		soc_configure_pads(uartc_pads, ARRAY_SIZE(uartc_pads));
+		break;
+	case 3:
+		soc_configure_pads(uartd_pads, ARRAY_SIZE(uartd_pads));
+		break;
+	}
 }
 
 static void set_clock_sources(void)
 {
-	/* UARTB gets PLLP, deactivate CLK_UART_DIV_OVERRIDE */
-	write32(CLK_RST_REG(clk_src_uartb), PLLP << CLK_SOURCE_SHIFT);
+	void *rst_reg;
+
+	switch (CONFIG_CONSOLE_SERIAL_TEGRA210_UART_ID) {
+	case 0:
+		rst_reg = CLK_RST_REG(clk_src_uarta);
+		break;
+	case 1:
+		rst_reg = CLK_RST_REG(clk_src_uartb);
+		break;
+	case 2:
+		rst_reg = CLK_RST_REG(clk_src_uartc);
+		break;
+	case 3:
+		rst_reg = CLK_RST_REG(clk_src_uartd);
+		break;
+	case 4:
+		rst_reg = CLK_RST_REG(clk_src_uarte);
+		break;
+	default:
+		/* none or invalid */
+		return;
+	}
+
+	/* Console UART gets PLLP, deactivate CLK_UART_DIV_OVERRIDE */
+	write32(rst_reg, PLLP << CLK_SOURCE_SHIFT);
 }
 
 #if 0

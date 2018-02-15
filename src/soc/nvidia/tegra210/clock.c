@@ -489,12 +489,47 @@ u32 clock_configure_plld(u32 frequency)
  */
 void clock_early_uart(void)
 {
-	write32(CLK_RST_REG(clk_src_uartb),
-		CLK_SRC_DEV_ID(UARTB, PLLP) << CLK_SOURCE_SHIFT |
+	void *rst_reg;
+	uint32_t dev_id;
+	uint32_t lclks = 0, hclks = 0, uclks = 0;
+
+	switch (CONFIG_CONSOLE_SERIAL_TEGRA210_UART_ID) {
+	case 0:
+		rst_reg = CLK_RST_REG(clk_src_uarta);
+		dev_id = CLK_SRC_DEV_ID(UARTA, PLLP);
+		lclks = CLK_L_UARTA;
+		break;
+	case 1:
+		rst_reg = CLK_RST_REG(clk_src_uartb);
+		dev_id = CLK_SRC_DEV_ID(UARTB, PLLP);
+		lclks = CLK_L_UARTB;
+		break;
+	case 2:
+		rst_reg = CLK_RST_REG(clk_src_uartc);
+		dev_id = CLK_SRC_DEV_ID(UARTC, PLLP);
+		hclks = CLK_H_UARTC;
+		break;
+	case 3:
+		rst_reg = CLK_RST_REG(clk_src_uartd);
+		dev_id = CLK_SRC_DEV_ID(UARTD, PLLP);
+		uclks = CLK_U_UARTD;
+		break;
+	case 4:
+		rst_reg = CLK_RST_REG(clk_src_uarte);
+		dev_id = CLK_SRC_DEV_ID(UARTE, PLLP);
+		uclks = CLK_U_UARTE;
+		break;
+	default:
+		/* none or invalid */
+		return;
+	}
+
+	write32(rst_reg,
+		dev_id << CLK_SOURCE_SHIFT |
 		CLK_UART_DIV_OVERRIDE |
 		CLK_DIVIDER(TEGRA_PLLP_KHZ, 1843));
 
-	clock_enable_clear_reset_l(CLK_L_UARTB);
+	clock_enable_clear_reset(lclks, hclks, uclks, 0, 0, 0, 0);
 }
 
 /* Enable output clock (CLK1~3) for external peripherals. */

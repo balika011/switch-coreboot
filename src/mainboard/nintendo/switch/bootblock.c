@@ -95,27 +95,43 @@ void bootblock_mainboard_early_init(void)
 static void set_clock_sources(void)
 {
 	void *rst_reg;
+	uint32_t lclks, hclks, uclks;
+
+	lclks = CLK_L_UARTA | CLK_L_UARTB;
+	hclks = CLK_H_UARTC;
+	uclks =  CLK_U_UARTD | CLK_U_UARTE;
 
 	switch (CONFIG_CONSOLE_SERIAL_TEGRA210_UART_ID) {
 	case 0:
 		rst_reg = CLK_RST_REG(clk_src_uarta);
+		lclks &= ~CLK_L_UARTA;
 		break;
 	case 1:
 		rst_reg = CLK_RST_REG(clk_src_uartb);
+		lclks &= ~CLK_L_UARTB;
 		break;
 	case 2:
 		rst_reg = CLK_RST_REG(clk_src_uartc);
+		hclks &= ~CLK_H_UARTC;
 		break;
 	case 3:
 		rst_reg = CLK_RST_REG(clk_src_uartd);
+		uclks &= ~CLK_U_UARTD;
 		break;
 	case 4:
 		rst_reg = CLK_RST_REG(clk_src_uarte);
+		uclks &= ~CLK_U_UARTE;
 		break;
 	default:
 		/* none or invalid */
 		return;
 	}
+
+	/*
+	 * Take all but the Console UARTs (already done in clock_early_uart())
+	 * out of reset
+	 */
+	clock_enable_clear_reset(lclks, hclks, uclks, 0, 0, 0, 0);
 
 	/* Console UART gets PLLP, deactivate CLK_UART_DIV_OVERRIDE */
 	write32(rst_reg, PLLP << CLK_SOURCE_SHIFT);

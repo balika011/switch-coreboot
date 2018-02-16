@@ -25,7 +25,7 @@
 #include <soc/padconfig.h>
 #include <soc/pmc.h>
 #include <soc/power.h>
-#include <soc/spi.h>
+#include <soc/uart.h>
 
 #include "pmic.h"
 
@@ -76,17 +76,20 @@ static const struct pad_config uartd_pads[] = {
 
 void bootblock_mainboard_early_init(void)
 {
-	switch (CONFIG_CONSOLE_SERIAL_TEGRA210_UART_ID) {
-	case 0:
+	switch (console_uart_get_id()) {
+	case UART_ID_NONE:
+	case UART_ID_E:
+		break;
+	case UART_ID_A:
 		soc_configure_pads(uarta_pads, ARRAY_SIZE(uarta_pads));
 		break;
-	case 1:
+	case UART_ID_B:
 		soc_configure_pads(uartb_pads, ARRAY_SIZE(uartb_pads));
 		break;
-	case 2:
+	case UART_ID_C:
 		soc_configure_pads(uartc_pads, ARRAY_SIZE(uartc_pads));
 		break;
-	case 3:
+	case UART_ID_D:
 		soc_configure_pads(uartd_pads, ARRAY_SIZE(uartd_pads));
 		break;
 	}
@@ -94,31 +97,11 @@ void bootblock_mainboard_early_init(void)
 
 static void set_clock_sources(void)
 {
-	void *rst_reg;
-
-	switch (CONFIG_CONSOLE_SERIAL_TEGRA210_UART_ID) {
-	case 0:
-		rst_reg = CLK_RST_REG(clk_src_uarta);
-		break;
-	case 1:
-		rst_reg = CLK_RST_REG(clk_src_uartb);
-		break;
-	case 2:
-		rst_reg = CLK_RST_REG(clk_src_uartc);
-		break;
-	case 3:
-		rst_reg = CLK_RST_REG(clk_src_uartd);
-		break;
-	case 4:
-		rst_reg = CLK_RST_REG(clk_src_uarte);
-		break;
-	default:
-		/* none or invalid */
+	if (console_uart_get_id() == UART_ID_NONE)
 		return;
-	}
 
 	/* Console UART gets PLLP, deactivate CLK_UART_DIV_OVERRIDE */
-	write32(rst_reg, PLLP << CLK_SOURCE_SHIFT);
+	write32(console_uart_clk_rst_reg(), PLLP << CLK_SOURCE_SHIFT);
 }
 
 void bootblock_mainboard_init(void)
